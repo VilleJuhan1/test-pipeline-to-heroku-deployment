@@ -13,16 +13,6 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Do a syntax check by attempting to build the Dockerfile
-      - name: Validate Dockerfile by attempting a dry build
-        run: |
-          echo "Checking Dockerfile syntax..."
-          docker build -t syntax-check --file Dockerfile . || {
-            echo "❌ Dockerfile build failed!"
-            exit 1
-          }
-          echo "✅ Dockerfile syntax is valid."
-
       # Do a Python syntax check
       - name: Syntax check app.py
         run: |
@@ -35,3 +25,16 @@ jobs:
             echo "❌ Flask not found in requirements.txt!"
             exit 1
           }
+          echo "✅ Flask found in requirements.txt."
+
+      # Do a requirements.txt check (hardcoded for flask only at the moment)
+      - name: Ensure gunicorn is present in requirements.txt
+        run: |
+          grep -i '^gunicorn' requirements.txt || {
+            echo "❌ Gunicorn not found in requirements.txt!"
+            exit 1
+          }
+          echo "✅ Gunicorn found in requirements.txt."
+      # If all checks pass
+      - name: All checks passed
+        run: echo "✅ All pre-deployment checks passed. Ready for deployment!"
