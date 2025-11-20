@@ -1,31 +1,43 @@
-name: Deploy to Heroku
+name: Pre-deployment Checks
 
 on:
   push:
-    branches:
-      - heroku # deploy only on pushes to heroku (change if needed)
+    branches: ["main", "development"]
+  pull_request:
 
-# Heroku deployment is automated via Heroku Git integration,
-# so this workflow focuses on pre-deployment checks.
 jobs:
-  deploy:
+  precheck:
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Syntax check Dockerfile
-        run: |
-          if ! docker buildx build --dry-run -f Dockerfile .; then
-            echo "Dockerfile syntax error!"
-            exit 1
-          fi
+      # Use hadolint to lint the Dockerfile
+      - name: Lint Dockerfile with hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
 
+      # Do a syntax check by attempting to build the Dockerfile
+      - name: Validate Dockerfile by attempting a dry build
+        run: |
+          echo "Checking Dockerfile syntax..."
+          docker build -t syntax-check --file Dockerfile . || {
+            echo "❌ Dockerfile build failed!"
+            exit 1
+          }
+          echo "✅ Dockerfile syntax is valid."
+
+      # Do a Python syntax check
       - name: Syntax check app.py
         run: |
           python3 -m py_compile app.py
 
-      - name: Check requirements.txt for flask
+      # Do a requirements.txt check (hardcoded for flask only at the moment)
+      - name: Ensure Flask is present in requirements.txt
         run: |
-          grep -i '^flask' requirements.txt || (echo "Flask not found in requirements.txt!" && exit 1)
+          grep -i '^flask' requirements.txt || {
+            echo "❌ Flask not found in requirements.txt!"
+            exit 1
+          }
