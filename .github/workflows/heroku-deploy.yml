@@ -2,8 +2,8 @@ name: Pre-deployment Checks
 
 on:
   push:
-    branches: ["main", "development"]
-  pull_request:
+    branches:
+      - heroku
 
 jobs:
   precheck:
