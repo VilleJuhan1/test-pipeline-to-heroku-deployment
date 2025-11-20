@@ -1,6 +1,6 @@
 # Deployment Pipeline to Heroku
 
-This app is for testing a CI/CD Pipeline to Heroku. It was initially supposed to work with multiple platforms, but as Heroku wants a Procfile instead of Dockerfile, I decided to default to one environment only. The change also means that it's not a Docker container anymore but instead a lightweight "Dyno", a container-like running environment specific to Heroku.
+This app is for testing a CI/CD Pipeline to Heroku. It was initially supposed to work with multiple platforms, but as Heroku wants a Procfile instead of Dockerfile, I decided to default to one environment only. The change also means that the deployed app is not a Docker container anymore but instead a lightweight "Dyno", a container-like running environment specific to Heroku.
 
 ## Setup
 
